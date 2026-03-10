@@ -1,3 +1,6 @@
 # Arquivos originais do WhatsApp (duplicados)
 assets/WhatsApp*
 assets/*.ogg
+node_modules/
+package-lock.json
+package.json
