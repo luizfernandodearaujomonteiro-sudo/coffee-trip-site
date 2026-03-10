@@ -166,6 +166,30 @@ a {
     transform: translateY(-2px);
 }
 
+/* HEADER SOCIAL */
+.header-social {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-social a {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    transition: var(--transition);
+}
+
+.header-social a:hover {
+    background: var(--gold);
+    color: var(--black);
+}
+
 /* HAMBURGER */
 .menu-toggle {
     display: none;
@@ -1079,6 +1103,10 @@ a {
     .nav-cta {
         text-align: center;
         width: 100%;
+    }
+
+    .header-social {
+        justify-content: center;
     }
 
     .menu-toggle {
