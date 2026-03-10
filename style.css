@@ -214,16 +214,17 @@ a {
 .hero::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(ellipse at 20% 50%, rgba(232, 169, 23, 0.08) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(232, 169, 23, 0.05) 0%, transparent 50%);
+    inset: -10px;
+    background: url('assets/img/mesa-abundante.jpeg') center/cover no-repeat;
+    filter: blur(3px);
+    z-index: 0;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.78) 0%, rgba(26, 26, 26, 0.72) 100%);
+    z-index: 1;
 }
 
 .hero-content {
