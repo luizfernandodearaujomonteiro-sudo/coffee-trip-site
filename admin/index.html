@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Coffee Trip</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/jpeg" href="../assets/img/logo.jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #E8A917; --gold-dark: #C48F0C;
+            --black: #0A0A0A; --black-light: #1A1A1A; --black-medium: #2A2A2A;
+            --white: #FFFFFF; --gray: #8A8A8A; --gray-light: #E0E0E0;
+            --success: #2ecc71; --danger: #e74c3c; --warning: #f39c12;
+            --radius: 10px;
+        }
+        body { font-family: 'Poppins', sans-serif; background: #111; color: var(--white); min-height: 100vh; }
+
+        /* LOGIN */
+        .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-box { background: var(--black-light); border: 1px solid #333; border-radius: 16px; padding: 48px; width: 100%; max-width: 420px; text-align: center; }
+        .login-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 20px; display: block; }
+        .login-box h1 { font-size: 1.4rem; margin-bottom: 6px; }
+        .login-box p { color: var(--gray); font-size: 0.88rem; margin-bottom: 32px; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.82rem; color: var(--gray); margin-bottom: 6px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; background: var(--black-medium); border: 1px solid #444; border-radius: var(--radius);
+            color: var(--white); font-family: 'Poppins', sans-serif; font-size: 0.9rem;
+            padding: 12px 14px; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--gold); }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+        .form-group select option { background: var(--black-medium); }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: var(--radius); border: none; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; text-decoration: none; }
+        .btn-primary { background: var(--gold); color: var(--black); }
+        .btn-primary:hover { background: var(--gold-dark); }
+        .btn-secondary { background: #333; color: var(--white); }
+        .btn-secondary:hover { background: #444; }
+        .btn-danger { background: var(--danger); color: var(--white); }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-success { background: var(--success); color: var(--white); }
+        .btn-success:hover { background: #27ae60; }
+        .btn-full { width: 100%; justify-content: center; }
+        .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+        .token-help { margin-top: 16px; font-size: 0.78rem; color: var(--gray); }
+        .token-help a { color: var(--gold); }
+
+        /* LAYOUT */
+        .admin-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: var(--black-light); border-right: 1px solid #2a2a2a; padding: 24px 0; flex-shrink: 0; display: flex; flex-direction: column; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; border-bottom: 1px solid #2a2a2a; }
+        .sidebar-logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .sidebar-logo span { font-size: 0.9rem; font-weight: 600; color: var(--gold); }
+        .sidebar-nav { padding: 16px 0; flex: 1; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 11px 20px; font-size: 0.88rem; color: var(--gray); cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; }
+        .sidebar-link:hover { color: var(--white); background: #222; }
+        .sidebar-link.active { color: var(--gold); background: rgba(232,169,23,0.1); border-right: 3px solid var(--gold); }
+        .sidebar-link svg { flex-shrink: 0; }
+        .sidebar-logout { padding: 16px 20px; border-top: 1px solid #2a2a2a; }
+        .main { flex: 1; overflow-y: auto; }
+        .main-header { padding: 24px 32px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; background: var(--black-light); }
+        .main-header h2 { font-size: 1.1rem; font-weight: 600; }
+        .main-content { padding: 32px; }
+
+        /* DASHBOARD */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px; }
+        .stat-card { background: var(--black-light); border: 1px solid #2a2a2a; border-radius: var(--radius); padding: 24px; }
+        .stat-card .stat-num { font-size: 2rem; font-weight: 700; color: var(--gold); }
+        .stat-card .stat-label { font-size: 0.82rem; color: var(--gray); margin-top: 4px; }
+
+        /* POSTS TABLE */
+        .posts-table { width: 100%; border-collapse: collapse; }
+        .posts-table th { text-align: left; padding: 12px 16px; font-size: 0.78rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #2a2a2a; }
+        .posts-table td { padding: 14px 16px; border-bottom: 1px solid #1e1e1e; font-size: 0.88rem; vertical-align: middle; }
+        .posts-table tr:hover td { background: #1a1a1a; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-published { background: rgba(46,204,113,0.2); color: var(--success); }
+        .badge-draft { background: rgba(138,138,138,0.2); color: var(--gray); }
+        .badge-scheduled { background: rgba(243,156,18,0.2); color: var(--warning); }
+        .post-title-col { max-width: 300px; }
+        .post-title-col strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .post-title-col small { color: var(--gray); font-size: 0.78rem; }
+        .actions { display: flex; gap: 8px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .empty-state svg { opacity: 0.3; margin-bottom: 16px; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* EDITOR */
+        .editor-grid { display: grid; grid-template-columns: 1fr 280px; gap: 24px; }
+        .editor-main { display: flex; flex-direction: column; gap: 20px; }
+        .editor-sidebar-panel { display: flex; flex-direction: column; gap: 16px; }
+        .panel { background: var(--black-light); border: 1px solid #2a2a2a; border-radius: var(--radius); padding: 20px; }
+        .panel h3 { font-size: 0.82rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .content-help { font-size: 0.75rem; color: var(--gray); margin-top: 8px; line-height: 1.6; }
+        .content-help code { background: #333; padding: 1px 5px; border-radius: 3px; font-family: monospace; }
+        .img-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; max-height: 200px; overflow-y: auto; }
+        .img-option { aspect-ratio: 1; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; }
+        .img-option:hover { border-color: var(--gray); }
+        .img-option.selected { border-color: var(--gold); }
+        .cover-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .saving { opacity: 0.6; pointer-events: none; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--black-light); border: 1px solid #333; border-radius: var(--radius); padding: 14px 20px; font-size: 0.88rem; z-index: 9999; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--gray); gap: 12px; }
+        .spinner { width: 20px; height: 20px; border: 2px solid #333; border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .editor-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr; }
+            .main-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="login-wrap">
+    <div class="login-box">
+        <img src="../assets/img/logo.jpeg" alt="Coffee Trip" class="login-logo">
+        <h1>Coffee Trip Admin</h1>
+        <p>Painel de gerenciamento do blog</p>
+        <div class="form-group">
+            <label>GitHub Personal Access Token</label>
+            <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Entrar</button>
+        <p class="token-help">
+            Não tem um token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=CoffeeTrip+Admin" target="_blank">Criar aqui</a> (marque o escopo <strong>repo</strong>)
+        </p>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="admin-layout hidden">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../assets/img/logo.jpeg" alt="Coffee Trip">
+            <span>Coffee Trip</span>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="sidebar-link active" id="nav-posts" onclick="showView('posts')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Posts
+            </button>
+            <button class="sidebar-link" id="nav-new" onclick="showView('editor')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Novo Post
+            </button>
+            <a href="/" class="sidebar-link" target="_blank">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Ver Site
+            </a>
+        </nav>
+        <div class="sidebar-logout">
+            <button class="btn btn-secondary btn-sm btn-full" onclick="doLogout()">Sair</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <!-- Posts View -->
+        <div id="view-posts">
+            <div class="main-header">
+                <h2>Posts do Blog</h2>
+                <button class="btn btn-primary btn-sm" onclick="showView('editor')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Novo Post
+                </button>
+            </div>
+            <div class="main-content">
+                <div class="stats" id="stats-row">
+                    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total de posts</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-published">0</div><div class="stat-label">Publicados</div></div>
+                    <div class="stat-card"><div class="stat-num" id="stat-draft">0</div><div class="stat-label">Rascunhos</div></div>
+                </div>
+                <div class="panel">
+                    <div id="posts-loading" class="loading"><div class="spinner"></div> Carregando posts...</div>
+                    <table class="posts-table hidden" id="posts-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="posts-tbody"></tbody>
+                    </table>
+                    <div id="posts-empty" class="empty-state hidden">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                        <p>Nenhum post ainda. Crie o primeiro!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor View -->
+        <div id="view-editor" class="hidden">
+            <div class="main-header">
+                <h2 id="editor-title-header">Novo Post</h2>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn btn-secondary btn-sm" onclick="showView('posts')">← Voltar</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-save-draft" onclick="savePost('draft')">Salvar Rascunho</button>
+                    <button class="btn btn-primary btn-sm" id="btn-publish" onclick="savePost('published')">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+                        Publicar
+                    </button>
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="editor-grid">
+                    <div class="editor-main">
+                        <div class="panel">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label>Título do Post</label>
+                                <input type="text" id="post-title" placeholder="Ex: Como montar um coffee break perfeito">
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="form-group" style="margin-bottom:0">
+                                <label>Resumo (aparece na listagem do blog)</label>
+                                <textarea id="post-excerpt" rows="3" placeholder="Breve descrição do post em 1-2 frases..."></textarea>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h3>Conteúdo</h3>
+                            <div class="form-group" style="margin-bottom:0">
+                                <textarea id="post-content" rows="20" placeholder="Escreva o conteúdo do post aqui...
+
+Use ## para títulos de seção
+Use **texto** para negrito
+Use - item para listas
+Use > texto para destaque em caixa
+
+Exemplo:
+## Primeiro tópico
+
+Parágrafo normal aqui. Continue escrevendo normalmente.
+
+Outro parágrafo separado por linha em branco.
+
+## Segundo tópico
+
+- Item da lista
+- Outro item
+- Mais um
+
+> Este texto vai aparecer em destaque com borda dourada."></textarea>
+                                <p class="content-help">
+                                    <code>## Título</code> seção &nbsp;|&nbsp;
+                                    <code>**negrito**</code> &nbsp;|&nbsp;
+                                    <code>- item</code> lista &nbsp;|&nbsp;
+                                    <code>&gt; texto</code> destaque &nbsp;|&nbsp;
+                                    linha em branco = novo parágrafo
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-sidebar-panel">
+                        <div class="panel">
+                            <h3>Publicação</h3>
+                            <div class="form-row">
+                                <div class="form-group" style="margin-bottom:0">
+                                    <label>Categoria</label>
+                                    <select id="post-tag">
+                                        <option value="Dicas">Dicas</option>
+                                        <option value="Tendências">Tendências</option>
+                                        <option value="Delivery">Delivery</option>
+                                        <option value="Inspiração">Inspiração</option>
+                                        <option value="Eventos">Eventos</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-bottom:0">
+                                    <label>Tempo de leitura</label>
+                                    <input type="number" id="post-readtime" value="5" min="1" max="30" placeholder="5">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:12px;margin-bottom:0">
+                                <label>Data de publicação</label>
+                                <input type="date" id="post-date">
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h3>Foto de capa</h3>
+                            <img id="cover-preview" src="../assets/img/mesa-completa.jpeg" alt="Capa" class="cover-preview">
+                            <input type="hidden" id="post-cover" value="mesa-completa.jpeg">
+                            <div class="img-grid" id="img-grid"></div>
+                        </div>
+                        <div class="panel" id="panel-delete" style="display:none">
+                            <h3>Perigo</h3>
+                            <button class="btn btn-danger btn-sm btn-full" onclick="deletePost()">Excluir post</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+const REPO = 'luizfernandodearaujomonteiro-sudo/coffee-trip-site';
+const BRANCH = 'master';
+const IMAGES = ['mesa-completa.jpeg','mesa-abundante.jpeg','mesa-evento-azul.jpeg','mesa-corporativa-preta.jpeg','mesa-vitrine-bolos.jpeg','mesa-perspectiva.jpeg','mesa-noturna.jpeg','mesa-redonda.jpeg','mesa-grande-evento.jpeg','mesa-preta-moderna.jpeg','mesa-elegante.jpeg','mesa-sofisticada.jpeg','mesa-tropical.jpeg','evento-piraque.jpeg','evento-estufa.jpeg','detalhe-frutas-coloridas.jpeg','detalhe-infusao.jpeg','detalhe-bolos-duplo.jpeg','detalhe-sucos-cristal.jpeg','detalhe-doces-aerea.jpeg','detalhe-canapes-tomate.jpeg','delivery-box-premium.jpeg','delivery-bolo.jpeg','canapes.jpeg','estacao-cafe.jpeg','estacao-bebidas.jpeg'];
+
+let token = localStorage.getItem('ct_token');
+let posts = [];
+let editingSlug = null;
+
+// ─── AUTH ───
+function doLogin() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) return showToast('Digite o token', 'error');
+    token = t;
+    localStorage.setItem('ct_token', t);
+    startApp();
+}
+function doLogout() {
+    localStorage.removeItem('ct_token');
+    token = null;
+    document.getElementById('screen-login').classList.remove('hidden');
+    document.getElementById('screen-app').classList.add('hidden');
+}
+
+// ─── GITHUB API ───
+async function ghGet(path) {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+}
+async function ghPut(path, content, message, sha = null) {
+    const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: BRANCH };
+    if (sha) body.sha = sha;
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+        method: 'PUT',
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    return r.json();
+}
+async function ghDelete(path, message, sha) {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+        method: 'DELETE',
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, sha, branch: BRANCH })
+    });
+    if (!r.ok) throw new Error(await r.text());
+}
+async function getFileSha(path) {
+    try { const f = await ghGet(path); return f.sha; } catch { return null; }
+}
+
+// ─── POSTS JSON ───
+async function loadPosts() {
+    try {
+        const f = await ghGet('blog/posts.json');
+        posts = JSON.parse(decodeURIComponent(escape(atob(f.content))));
+    } catch { posts = []; }
+}
+async function savePosts() {
+    const sha = await getFileSha('blog/posts.json');
+    const clean = posts.map(p => ({ ...p }));
+    await ghPut('blog/posts.json', JSON.stringify(clean, null, 2), 'chore: atualiza posts.json', sha);
+}
+
+// ─── CONTENT PARSER (markdown-lite → HTML) ───
+function parseContent(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        // Bold
+        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        if (line.startsWith('## ')) {
+            if (inList) { html += '</ul>\n'; inList = false; }
+            html += `<h2>${line.slice(3)}</h2>\n`;
+        } else if (line.startsWith('> ')) {
+            if (inList) { html += '</ul>\n'; inList = false; }
+            html += `<div class="post-highlight">${line.slice(2)}</div>\n`;
+        } else if (line.startsWith('- ')) {
+            if (!inList) { html += '<ul>\n'; inList = true; }
+            html += `<li>${line.slice(2)}</li>\n`;
+        } else if (line.trim() === '') {
+            if (inList) { html += '</ul>\n'; inList = false; }
+            html += '';
+        } else {
+            if (inList) { html += '</ul>\n'; inList = false; }
+            html += `<p>${line}</p>\n`;
+        }
+    }
+    if (inList) html += '</ul>\n';
+    return html;
+}
+
+// ─── HTML GENERATOR ───
+function generatePostHTML(post) {
+    const bodyContent = parseContent(post.content || '');
+    const slug = post.slug;
+    const headerSVGs = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>`;
+    return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6EQNXVVWDD"><\/script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6EQNXVVWDD');<\/script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${post.title} | Coffee Trip</title>
+    <meta name="description" content="${post.excerpt}">
+    <meta name="robots" content="${post.status === 'published' ? 'index, follow' : 'noindex, nofollow'}">
+    <meta name="author" content="Coffee Trip">
+    <meta property="og:title" content="${post.title} | Coffee Trip">
+    <meta property="og:description" content="${post.excerpt}">
+    <meta property="og:image" content="https://coffeetrip.com.br/assets/img/${post.cover}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://coffeetrip.com.br/blog/${slug}.html">
+    <link rel="canonical" href="https://coffeetrip.com.br/blog/${slug}.html">
+    <link rel="icon" type="image/jpeg" href="../assets/img/logo.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${post.title}","description":"${post.excerpt}","image":"https://coffeetrip.com.br/assets/img/${post.cover}","author":{"@type":"Organization","name":"Coffee Trip"},"publisher":{"@type":"Organization","name":"Coffee Trip","logo":{"@type":"ImageObject","url":"https://coffeetrip.com.br/assets/img/logo.jpeg"}},"datePublished":"${post.date}","dateModified":"${post.date}","url":"https://coffeetrip.com.br/blog/${slug}.html"}<\/script>
+    <style>
+        .post-hero{background:var(--black);padding:160px 0 60px}
+        .post-hero-inner{max-width:800px;margin:0 auto}
+        .post-tag{display:inline-block;background:var(--gold);color:var(--black);font-size:.75rem;font-weight:600;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:20px}
+        .post-hero h1{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);color:var(--white);line-height:1.3;margin-bottom:20px}
+        .post-meta{color:var(--gray);font-size:.9rem;display:flex;gap:24px;flex-wrap:wrap}
+        .post-cover{width:100%;max-height:480px;object-fit:cover;border-radius:0 0 var(--radius) var(--radius)}
+        .post-body{max-width:800px;margin:0 auto;padding:60px 24px 80px}
+        .post-body h2{font-family:var(--font-display);font-size:1.7rem;color:var(--black);margin:48px 0 16px;padding-bottom:12px;border-bottom:2px solid var(--gold)}
+        .post-body h3{font-family:var(--font-display);font-size:1.2rem;color:var(--black-medium);margin:28px 0 10px}
+        .post-body p{color:#333;font-size:1.02rem;line-height:1.85;margin-bottom:20px}
+        .post-body ul,.post-body ol{margin:16px 0 24px 24px;color:#333;line-height:1.85}
+        .post-body li{margin-bottom:8px;font-size:1.02rem}
+        .post-body strong{color:var(--black)}
+        .post-highlight{background:var(--white-off);border-left:4px solid var(--gold);padding:20px 24px;border-radius:0 var(--radius) var(--radius) 0;margin:32px 0;font-style:italic;color:var(--black-medium)}
+        .post-cta{background:var(--black);border-radius:var(--radius);padding:40px;text-align:center;margin-top:60px}
+        .post-cta h3{font-family:var(--font-display);color:var(--white);font-size:1.5rem;margin-bottom:12px}
+        .post-cta p{color:var(--gray);margin-bottom:24px}
+        .post-breadcrumb{font-size:.85rem;color:var(--gray);margin-bottom:24px}
+        .post-breadcrumb a{color:var(--gold)}
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container header-inner">
+            <a href="/" class="logo"><img src="../assets/img/logo.jpeg" alt="Coffee Trip Logo"></a>
+            <nav id="nav" class="nav">
+                <a href="/#sobre" class="nav-link">Sobre</a>
+                <a href="/#servicos" class="nav-link">Serviços</a>
+                <a href="/#galeria" class="nav-link">Galeria</a>
+                <a href="/blog/" class="nav-link active">Blog</a>
+                <a href="/#contato" class="nav-link">Contato</a>
+                <div class="header-social">
+                    <a href="https://www.instagram.com/cof.feetrip" target="_blank" rel="noopener" aria-label="Instagram">${headerSVGs}</a>
+                </div>
+                <a href="https://wa.me/5521996377004?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20de%20Coffee%20Break." class="nav-cta" target="_blank" rel="noopener">Solicitar Orçamento</a>
+            </nav>
+            <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+    <section class="post-hero">
+        <div class="container">
+            <div class="post-hero-inner">
+                <p class="post-breadcrumb"><a href="/">Home</a> → <a href="/blog/">Blog</a> → ${post.tag}</p>
+                <span class="post-tag">${post.tag}</span>
+                <h1>${post.title}</h1>
+                <div class="post-meta">
+                    <span>${new Date(post.date + 'T12:00:00').toLocaleDateString('pt-BR', {day:'numeric',month:'long',year:'numeric'})}</span>
+                    <span>Por Coffee Trip</span>
+                    <span>${post.readTime} min de leitura</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="container">
+        <img src="../assets/img/${post.cover}" alt="${post.title}" class="post-cover" loading="eager">
+    </div>
+    <div class="container">
+        <article class="post-body">
+            ${bodyContent}
+            <div class="post-cta">
+                <h3>Quer um orçamento para seu próximo evento?</h3>
+                <p>Atendemos empresas em todo o Rio de Janeiro. Entre em contato e receba uma proposta personalizada.</p>
+                <a href="https://wa.me/5521996377004?text=Olá!%20Li%20o%20blog%20e%20gostaria%20de%20solicitar%20um%20orçamento%20de%20Coffee%20Break." class="btn btn-primary" target="_blank" rel="noopener">Solicitar orçamento pelo WhatsApp</a>
+            </div>
+        </article>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <img src="../assets/img/logo.jpeg" alt="Coffee Trip" class="footer-logo">
+                    <p>Coffee Break Corporativo para empresas no Rio de Janeiro.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navegação</h4>
+                    <a href="/#sobre">Sobre</a><a href="/#servicos">Serviços</a><a href="/#galeria">Galeria</a><a href="/blog/">Blog</a><a href="/#contato">Contato</a>
+                </div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 Coffee Trip. Todos os direitos reservados.</p></div>
+        </div>
+    </footer>
+    <a href="https://wa.me/5521996377004?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20de%20Coffee%20Break." class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+    <script src="../script.js"><\/script>
+</body>
+</html>`;
+}
+
+// ─── VIEWS ───
+function showView(view) {
+    document.getElementById('view-posts').classList.toggle('hidden', view !== 'posts');
+    document.getElementById('view-editor').classList.toggle('hidden', view !== 'editor');
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    document.getElementById(view === 'posts' ? 'nav-posts' : 'nav-new').classList.add('active');
+    if (view === 'editor' && !editingSlug) resetEditor();
+    if (view === 'posts') renderPosts();
+}
+
+function resetEditor() {
+    editingSlug = null;
+    document.getElementById('editor-title-header').textContent = 'Novo Post';
+    document.getElementById('post-title').value = '';
+    document.getElementById('post-excerpt').value = '';
+    document.getElementById('post-content').value = '';
+    document.getElementById('post-tag').value = 'Dicas';
+    document.getElementById('post-readtime').value = '5';
+    document.getElementById('post-date').value = new Date().toISOString().slice(0,10);
+    setCover('mesa-completa.jpeg');
+    document.getElementById('panel-delete').style.display = 'none';
+}
+
+function setCover(img) {
+    document.getElementById('post-cover').value = img;
+    document.getElementById('cover-preview').src = `../assets/img/${img}`;
+    document.querySelectorAll('.img-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.img === img);
+    });
+}
+
+function editPost(slug) {
+    const p = posts.find(x => x.slug === slug);
+    if (!p) return;
+    editingSlug = slug;
+    document.getElementById('editor-title-header').textContent = 'Editar Post';
+    document.getElementById('post-title').value = p.title;
+    document.getElementById('post-excerpt').value = p.excerpt;
+    document.getElementById('post-content').value = p.content || '';
+    document.getElementById('post-tag').value = p.tag;
+    document.getElementById('post-readtime').value = p.readTime;
+    document.getElementById('post-date').value = p.date;
+    setCover(p.cover);
+    document.getElementById('panel-delete').style.display = 'block';
+    showView('editor');
+}
+
+function renderPosts() {
+    const tbody = document.getElementById('posts-tbody');
+    const table = document.getElementById('posts-table');
+    const empty = document.getElementById('posts-empty');
+    const loading = document.getElementById('posts-loading');
+    loading.classList.add('hidden');
+    if (posts.length === 0) {
+        table.classList.add('hidden');
+        empty.classList.remove('hidden');
+    } else {
+        table.classList.remove('hidden');
+        empty.classList.add('hidden');
+        tbody.innerHTML = posts.map(p => `
+            <tr>
+                <td class="post-title-col"><strong>${p.title}</strong><small>${p.slug}</small></td>
+                <td><span class="badge badge-published" style="background:rgba(232,169,23,0.2);color:var(--gold)">${p.tag}</span></td>
+                <td>${p.date}</td>
+                <td><span class="badge badge-${p.status}">${p.status === 'published' ? 'Publicado' : 'Rascunho'}</span></td>
+                <td>
+                    <div class="actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editPost('${p.slug}')">Editar</button>
+                        <a href="/blog/${p.slug}.html" target="_blank" class="btn btn-secondary btn-sm">Ver</a>
+                    </div>
+                </td>
+            </tr>`).join('');
+    }
+    document.getElementById('stat-total').textContent = posts.length;
+    document.getElementById('stat-published').textContent = posts.filter(p => p.status === 'published').length;
+    document.getElementById('stat-draft').textContent = posts.filter(p => p.status === 'draft').length;
+}
+
+// ─── SAVE POST ───
+async function savePost(status) {
+    const title = document.getElementById('post-title').value.trim();
+    const excerpt = document.getElementById('post-excerpt').value.trim();
+    const content = document.getElementById('post-content').value.trim();
+    if (!title) return showToast('Digite o título do post', 'error');
+    if (!excerpt) return showToast('Digite o resumo', 'error');
+    if (!content) return showToast('Escreva o conteúdo', 'error');
+
+    const slug = editingSlug || title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    const post = {
+        slug,
+        title,
+        excerpt,
+        cover: document.getElementById('post-cover').value,
+        tag: document.getElementById('post-tag').value,
+        date: document.getElementById('post-date').value,
+        status,
+        readTime: document.getElementById('post-readtime').value,
+        content
+    };
+
+    setBusy(true);
+    try {
+        const html = generatePostHTML(post);
+        const htmlPath = `blog/${slug}.html`;
+        const htmlSha = await getFileSha(htmlPath);
+        await ghPut(htmlPath, html, `${status === 'published' ? 'feat' : 'draft'}: ${title}`, htmlSha);
+
+        const idx = posts.findIndex(p => p.slug === slug);
+        if (idx >= 0) posts[idx] = post; else posts.unshift(post);
+        await savePosts();
+
+        showToast(status === 'published' ? 'Post publicado com sucesso!' : 'Rascunho salvo!', 'success');
+        editingSlug = slug;
+        document.getElementById('panel-delete').style.display = 'block';
+        document.getElementById('editor-title-header').textContent = 'Editar Post';
+    } catch (e) {
+        showToast('Erro: ' + e.message, 'error');
+        console.error(e);
+    }
+    setBusy(false);
+}
+
+// ─── DELETE ───
+async function deletePost() {
+    if (!editingSlug) return;
+    if (!confirm(`Excluir o post "${editingSlug}"? Esta ação não pode ser desfeita.`)) return;
+    setBusy(true);
+    try {
+        const htmlPath = `blog/${editingSlug}.html`;
+        const sha = await getFileSha(htmlPath);
+        if (sha) await ghDelete(htmlPath, `remove: post ${editingSlug}`, sha);
+        posts = posts.filter(p => p.slug !== editingSlug);
+        await savePosts();
+        showToast('Post excluído', 'success');
+        showView('posts');
+    } catch (e) {
+        showToast('Erro ao excluir: ' + e.message, 'error');
+    }
+    setBusy(false);
+}
+
+// ─── UI HELPERS ───
+function setBusy(busy) {
+    document.getElementById('btn-save-draft').disabled = busy;
+    document.getElementById('btn-publish').disabled = busy;
+    document.getElementById('view-editor').classList.toggle('saving', busy);
+}
+
+function showToast(msg, type = 'success') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<span>${type === 'success' ? '✓' : '✗'}</span> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+function buildImgGrid() {
+    const grid = document.getElementById('img-grid');
+    grid.innerHTML = IMAGES.map(img => `<img src="../assets/img/${img}" class="img-option" data-img="${img}" onclick="setCover('${img}')" loading="lazy">`).join('');
+}
+
+// ─── START ───
+async function startApp() {
+    document.getElementById('screen-login').classList.add('hidden');
+    document.getElementById('screen-app').classList.remove('hidden');
+    buildImgGrid();
+    document.getElementById('post-date').value = new Date().toISOString().slice(0,10);
+    setCover('mesa-completa.jpeg');
+    await loadPosts();
+    renderPosts();
+}
+
+// ─── INIT ───
+if (token) { startApp(); }
+</script>
+</body>
+</html>
