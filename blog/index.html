@@ -196,10 +196,9 @@
                     </div>
                 </article>`;
             }).join('');
-            // re-trigger reveal animations
-            document.querySelectorAll('.reveal').forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('active');
-            });
+            // Os cards são criados após o observer de "reveal" do script.js, então
+            // ativamos todos aqui para garantir que apareçam (sem depender do scroll).
+            grid.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
         })
         .catch(() => {
             document.getElementById('blog-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray)">Erro ao carregar posts.</div>';
