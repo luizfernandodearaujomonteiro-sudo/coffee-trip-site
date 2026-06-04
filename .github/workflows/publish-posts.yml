@@ -2,9 +2,10 @@ name: Publicar posts agendados
 
 on:
   schedule:
-    # Roda todo dia às 9h de Brasília (12h UTC)
-    - cron: '0 12 * * *'
-  workflow_dispatch: # Permite rodar manualmente pelo GitHub
+    # Roda toda quarta-feira às 11h de Brasília (14h UTC).
+    # (Os posts são agendados para quartas; assim o site só faz deploy 1x/semana.)
+    - cron: '0 14 * * 3'
+  workflow_dispatch: # Permite rodar manualmente pelo GitHub a qualquer momento
 
 jobs:
   publish:
